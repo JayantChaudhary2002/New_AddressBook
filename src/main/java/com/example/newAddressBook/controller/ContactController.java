@@ -15,7 +15,7 @@ import java.util.Optional;
 public class ContactController {
 
     @Autowired
-    private ContactService contactService; // Dependency Injection of Service Layer
+    private ContactService contactService;
 
     // Create a new Contact
     @PostMapping
@@ -29,8 +29,6 @@ public class ContactController {
     public ResponseEntity<List<Contact>> getAllContacts() {
         return ResponseEntity.ok(contactService.getAllContacts());
     }
-
-    //Getting Service Layer use
 
     // Get Contact by ID
     @GetMapping("/{id}")
