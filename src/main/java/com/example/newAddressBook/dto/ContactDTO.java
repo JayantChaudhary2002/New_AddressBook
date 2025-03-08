@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+@Data //Allows to generate auto setters and getters
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContactDTO {
