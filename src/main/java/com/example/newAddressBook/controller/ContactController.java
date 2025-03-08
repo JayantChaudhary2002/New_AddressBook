@@ -30,6 +30,8 @@ public class ContactController {
         return ResponseEntity.ok(contactService.getAllContacts());
     }
 
+    //Getting Service Layer use
+
     // Get Contact by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getContactById(@PathVariable Long id) {
