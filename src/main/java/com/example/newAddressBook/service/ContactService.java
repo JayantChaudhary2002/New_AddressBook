@@ -1,41 +1,48 @@
 package com.example.newAddressBook.service;
 
+import com.example.newAddressBook.dto.ContactDTO;
 import com.example.newAddressBook.model.Contact;
 import com.example.newAddressBook.repository.ContactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ContactService {
-
     @Autowired
-    private ContactRepository repository;
+    private ContactRepository contactRepository;
+
+    public Contact addContact(ContactDTO contactDTO) {
+        Contact contact = new Contact(contactDTO);
+        return contactRepository.save(contact);
+    }
 
     public List<Contact> getAllContacts() {
-        return repository.findAll();
+        return contactRepository.findAll();
     }
 
-    public Contact getContactById(Long id) {
-        return repository.findById(id).orElse(null);
+    public Optional<Contact> getContactById(Long id) {
+        return contactRepository.findById(id);
     }
 
-    public Contact addContact(Contact contact) {
-        return repository.save(contact);
-    }
-
-    public Contact updateContact(Long id, Contact updatedContact) {
-        return repository.findById(id)
+    public Contact updateContact(Long id, ContactDTO contactDTO) {
+        return contactRepository.findById(id)
                 .map(contact -> {
-                    contact.setName(updatedContact.getName());
-                    contact.setEmail(updatedContact.getEmail());
-                    contact.setPhoneNumber(updatedContact.getPhoneNumber());
-                    contact.setAddress(updatedContact.getAddress());
-                    return repository.save(contact);
+                    contact.setName(contactDTO.getName());
+                    contact.setPhone(contactDTO.getPhone());
+                    contact.setEmail(contactDTO.getEmail());
+                    contact.setAddress(contactDTO.getAddress());
+                    return contactRepository.save(contact);
                 }).orElse(null);
     }
 
-    public void deleteContact(Long id) {
-        repository.deleteById(id);
+    public boolean deleteContact(Long id) {
+        if (contactRepository.existsById(id)) {
+            contactRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }
