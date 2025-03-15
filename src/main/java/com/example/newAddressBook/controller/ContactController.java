@@ -1,22 +1,21 @@
 package com.example.newAddressBook.controller;
 
 import com.example.newAddressBook.dto.ContactDTO;
+import com.example.newAddressBook.exception.AddressBookNotFoundException;
 import com.example.newAddressBook.model.Contact;
 import com.example.newAddressBook.service.ContactService;
-import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/contacts")
 public class ContactController {
 
-    @Autowired
-    public ContactService contactService;
+    private final ContactService contactService;
+
     public ContactController(ContactService contactService) {
         this.contactService = contactService;
     }
@@ -36,23 +35,23 @@ public class ContactController {
 
     // Get Contact by ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> getContactById(@PathVariable Long id) {
-        Optional<Contact> contact = contactService.getContactById(id);
-        return contact.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Contact> getContactById(@PathVariable Long id) {
+        Contact contact = contactService.getContactById(id)
+                .orElseThrow(() -> new AddressBookNotFoundException(id));
+        return ResponseEntity.ok(contact);
     }
 
     // Update Contact by ID
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateContact(@PathVariable Long id, @Valid @RequestBody ContactDTO contactDTO) {
+    public ResponseEntity<Contact> updateContact(@PathVariable Long id, @Valid @RequestBody ContactDTO contactDTO) {
         Contact updatedContact = contactService.updateContact(id, contactDTO);
-        return (updatedContact != null) ? ResponseEntity.ok(updatedContact) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(updatedContact);
     }
 
     // Delete Contact by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteContact(@PathVariable Long id) {
-        return contactService.deleteContact(id)
-                ? ResponseEntity.ok("Deleted Successfully")
-                : ResponseEntity.notFound().build();
+        contactService.deleteContact(id); // Will throw exception if not found
+        return ResponseEntity.ok("Deleted Successfully");
     }
 }
