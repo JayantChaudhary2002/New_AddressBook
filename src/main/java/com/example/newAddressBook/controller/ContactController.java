@@ -4,6 +4,7 @@ import com.example.newAddressBook.dto.ContactDTO;
 import com.example.newAddressBook.model.Contact;
 import com.example.newAddressBook.service.ContactService;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +16,14 @@ import java.util.Optional;
 public class ContactController {
 
     @Autowired
-    private ContactService contactService;
+    public ContactService contactService;
+    public ContactController(ContactService contactService) {
+        this.contactService = contactService;
+    }
 
     // Create a new Contact
     @PostMapping
-    public ResponseEntity<Contact> addContact(@RequestBody ContactDTO contactDTO) {
+    public ResponseEntity<Contact> addContact(@Valid @RequestBody ContactDTO contactDTO) {
         Contact newContact = contactService.addContact(contactDTO);
         return ResponseEntity.ok(newContact);
     }
@@ -39,7 +43,7 @@ public class ContactController {
 
     // Update Contact by ID
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateContact(@PathVariable Long id, @RequestBody ContactDTO contactDTO) {
+    public ResponseEntity<?> updateContact(@PathVariable Long id, @Valid @RequestBody ContactDTO contactDTO) {
         Contact updatedContact = contactService.updateContact(id, contactDTO);
         return (updatedContact != null) ? ResponseEntity.ok(updatedContact) : ResponseEntity.notFound().build();
     }
